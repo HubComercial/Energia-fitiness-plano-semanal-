@@ -1,0 +1,1106 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Energia Fitness | Plano Semanal Personalizado</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: linear-gradient(145deg, #0D1117 0%, #0A0E13 100%);
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      padding: 1.5rem;
+      min-height: 100vh;
+      color: #E6EDF3;
+    }
+    .app-container { max-width: 1400px; margin: 0 auto; }
+    .brand { text-align: center; margin-bottom: 2rem; }
+    .brand h1 {
+      font-size: 2.5rem;
+      background: linear-gradient(120deg, #FFFFFF, #A9C9E0);
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+      letter-spacing: -1px; font-weight: 800;
+    }
+    .brand p { color: #8BA0B0; font-weight: 500; margin-top: 0.5rem; font-size: 1rem; }
+    .main-grid { display: grid; grid-template-columns: 1fr 1.5fr; gap: 2rem; }
+    .card {
+      background: rgba(22, 28, 36, 0.95);
+      backdrop-filter: blur(4px);
+      border-radius: 36px;
+      box-shadow: 0 25px 40px -12px rgba(0, 0, 0, 0.4);
+      padding: 1.8rem;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .form-group { margin-bottom: 1.2rem; display: flex; flex-direction: column; gap: 0.4rem; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    label {
+      font-weight: 600; font-size: 0.75rem; color: #8BA0B0;
+      letter-spacing: 0.5px; text-transform: uppercase;
+    }
+    input, select {
+      padding: 0.8rem 1.2rem; border-radius: 28px; border: 1px solid #2D3A48;
+      background: #0D1117; font-size: 0.9rem; transition: 0.2s;
+      font-weight: 500; color: #FFFFFF;
+    }
+    input:focus, select:focus {
+      outline: none; border-color: #3b8fc2;
+      box-shadow: 0 0 0 3px rgba(59,143,194,0.2);
+    }
+    button {
+      background: #1e4663; color: white; border: none;
+      padding: 0.9rem; border-radius: 40px; font-weight: 700;
+      font-size: 1rem; cursor: pointer; width: 100%;
+      margin-top: 0.8rem; transition: all 0.2s;
+    }
+    button.primary { background: linear-gradient(95deg, #256F4C, #12422E); }
+    button.whatsapp { background: linear-gradient(95deg, #25D366, #128C7E); }
+    button.secondary { background: #2A3A4A; }
+    button:hover { transform: translateY(-2px); filter: brightness(1.05); }
+    button:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+    .stats-card { background: linear-gradient(120deg, #1A242F, #111820); border-radius: 28px; padding: 1.2rem; }
+    .macro-row {
+      display: flex; justify-content: space-between;
+      background: #0D1117; padding: 0.9rem;
+      border-radius: 28px; margin: 1rem 0; flex-wrap: wrap; gap: 0.8rem;
+    }
+    .macro-item { background: #1A242F; padding: 0.3rem 1rem; border-radius: 40px; color: #A9C9E0; }
+    .weekly-plan, .workout-list { margin-top: 0.5rem; }
+    .day-card, .workout-day {
+      background: #0D1117; border-radius: 24px;
+      padding: 1rem; margin-bottom: 1rem;
+      border-left: 6px solid #3b8fc2;
+      animation: fadeInUp 0.4s ease both;
+    }
+    .day-card:nth-child(1) { animation-delay: 0.05s; border-left-color: #4CAF50; }
+    .day-card:nth-child(2) { animation-delay: 0.1s; border-left-color: #2196F3; }
+    .day-card:nth-child(3) { animation-delay: 0.15s; border-left-color: #FF9800; }
+    .day-card:nth-child(4) { animation-delay: 0.2s; border-left-color: #E91E63; }
+    .day-card:nth-child(5) { animation-delay: 0.25s; border-left-color: #9C27B0; }
+    .day-card:nth-child(6) { animation-delay: 0.3s; border-left-color: #00BCD4; }
+    .day-card:nth-child(7) { animation-delay: 0.35s; border-left-color: #FFC107; }
+    .workout-day:nth-child(1) { animation-delay: 0.05s; border-left-color: #4CAF50; }
+    .workout-day:nth-child(2) { animation-delay: 0.1s; border-left-color: #2196F3; }
+    .workout-day:nth-child(3) { animation-delay: 0.15s; border-left-color: #FF9800; }
+    .workout-day:nth-child(4) { animation-delay: 0.2s; border-left-color: #E91E63; }
+    .workout-day:nth-child(5) { animation-delay: 0.25s; border-left-color: #9C27B0; }
+    .workout-day.rest-day { border-left-color: #607D8B; opacity: 0.7; }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .day-title, .workout-title {
+      font-weight: 800; font-size: 1.1rem; margin-bottom: 0.7rem;
+      display: flex; align-items: center; gap: 0.5rem; color: #FFFFFF;
+    }
+    .meal-row { display: flex; flex-wrap: wrap; gap: 0.8rem; margin-top: 0.5rem; align-items: baseline; }
+    .meal-badge {
+      background: #1E2A36; border-radius: 32px; padding: 0.3rem 0.9rem;
+      font-size: 0.7rem; font-weight: 600; color: #A9C9E0; white-space: nowrap;
+    }
+    .meal-text { font-size: 0.85rem; color: #CDDCE9; }
+    .exercise-item {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 0.5rem 0; border-bottom: 1px solid #1E2A36; font-size: 0.85rem;
+    }
+    .exercise-item:last-child { border-bottom: none; }
+    .ad-space {
+      background: #0D1117; border-radius: 28px; padding: 0.5rem;
+      text-align: center; margin: 1rem 0; border: 1px solid #2D3A48;
+      min-height: 80px; display: flex; align-items: center;
+      justify-content: center; color: #4a5a6e; font-size: 0.8rem;
+    }
+    .footer-info {
+      display: flex; gap: 1rem; margin-top: 1.5rem;
+      flex-wrap: wrap; justify-content: center;
+    }
+    .footer-info > div {
+      background: #0D1117; border-radius: 28px; padding: 0.8rem;
+      text-align: center; font-size: 0.7rem; border: 1px solid #2D3A48;
+    }
+    .disclaimer {
+      font-size: 0.7rem; text-align: center; color: #6c7e91;
+      margin-top: 2rem; border-top: 1px solid #2D3A48; padding-top: 1rem;
+    }
+    @media (max-width: 880px) { .main-grid { grid-template-columns: 1fr; } }
+    .section-title { font-size: 1.4rem; font-weight: 700; margin-bottom: 1rem; color: #FFFFFF; }
+    .flex-between { display: flex; justify-content: space-between; align-items: center; }
+    .badge { background: #1E2A36; border-radius: 50px; padding: 0.2rem 0.8rem; font-size: 0.7rem; font-weight: bold; }
+    .modal {
+      display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); z-index: 2000;
+      justify-content: center; align-items: center;
+    }
+    .modal-content {
+      background: #1A242F; border-radius: 32px; max-width: 450px; width: 90%;
+      padding: 1.8rem; text-align: center; border: 1px solid #3b8fc2;
+    }
+    .modal-content h3 { color: #A9C9E0; margin-bottom: 1rem; }
+    .modal-content p { margin-bottom: 1rem; color: #CDDCE9; font-size: 0.9rem; }
+    .modal-buttons { display: flex; gap: 1rem; margin-top: 1rem; }
+    .modal-buttons button { margin-top: 0; }
+    .loading-spinner {
+      display: inline-block; width: 18px; height: 18px;
+      border: 3px solid rgba(255,255,255,0.3); border-radius: 50%;
+      border-top-color: #fff; animation: spin 0.8s linear infinite;
+      margin-right: 8px; vertical-align: middle;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .calories-bar {
+      height: 6px; background: #2D3A48; border-radius: 3px; margin: 0.5rem 0;
+      overflow: hidden;
+    }
+    .calories-fill { height: 100%; border-radius: 3px; transition: width 0.8s ease; }
+    .watermark { font-size: 0.65rem; color: #4a5a6e; text-align: center; margin-top: 0.5rem; }
+    .timer-message {
+      background: #1A242F; border-radius: 28px; padding: 0.6rem; margin-top: 1rem;
+      text-align: center; font-size: 0.8rem; color: #A9C9E0; border: 1px solid #2D3A48;
+    }
+  </style>
+</head>
+<body>
+<div class="app-container">
+  <div class="brand">
+    <h1>⚡ ENERGIA FITNESS</h1>
+    <p>Plano semanal personalizado • baseado em ciência</p>
+  </div>
+
+  <div class="main-grid">
+    <!-- Formulário -->
+    <div class="card">
+      <h3 style="margin-bottom: 1.2rem;">📋 Seus dados</h3>
+      <div class="form-group"><label>Peso (kg)</label><input type="number" id="weight" step="0.1" value="70" min="30" max="300"></div>
+      <div class="form-group"><label>Altura (cm)</label><input type="number" id="height" value="170" min="100" max="250"></div>
+      <div class="form-row">
+        <div class="form-group"><label>Idade</label><input type="number" id="age" value="28" min="14" max="100"></div>
+        <div class="form-group"><label>Sexo</label><select id="sex"><option value="male">Masculino</option><option value="female">Feminino</option></select></div>
+      </div>
+      <div class="form-group">
+        <label>Nível atividade</label>
+        <select id="activity">
+          <option value="1.2">Sedentário (pouco/no exercício)</option>
+          <option value="1.375">Leve (1-3 dias/semana)</option>
+          <option value="1.55" selected>Moderado (3-5 dias/semana)</option>
+          <option value="1.725">Ativo (6-7 dias/semana)</option>
+          <option value="1.9">Muito ativo (atleta)</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Objetivo</label>
+          <select id="goal">
+            <option value="lose">🔥 Emagrecer</option>
+            <option value="maintain">⚖️ Manter peso</option>
+            <option value="gain">💪 Ganhar massa</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Nível treino</label>
+          <select id="trainingLevel">
+            <option value="beginner">Iniciante</option>
+            <option value="intermediate">Intermediário</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Tempo/dia (min)</label>
+          <select id="timeAvailable">
+            <option value="20">20 min</option>
+            <option value="30" selected>30 min</option>
+            <option value="45">45 min</option>
+            <option value="60">60+ min</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Equipamentos</label>
+          <select id="equipment">
+            <option value="bodyweight">Apenas corpo</option>
+            <option value="basic">Básico (halteres)</option>
+            <option value="full">Academia completa</option>
+          </select>
+        </div>
+      </div>
+      <button id="generateBtn" class="primary">✨ GERAR MEU PLANO GRÁTIS</button>
+      <button id="regenerateBtn" class="secondary">🔄 GERAR NOVO PLANO</button>
+      <button id="btnPdfPersonalizado" class="whatsapp">📄 QUERO MEU PDF PERSONALIZADO</button>
+      <div id="timerMessage" class="timer-message"></div>
+    </div>
+
+    <!-- Dashboard resultados -->
+    <div>
+      <div class="card stats-card">
+        <div class="flex-between">
+          <span class="section-title">⚡ Resumo metabólico</span>
+          <span class="badge" id="goalBadge">Meta</span>
+        </div>
+        <div style="font-size: 2.5rem; font-weight:800; margin: 0.5rem 0;" id="totalCaloriesDisplay">-- kcal</div>
+        <div class="calories-bar"><div class="calories-fill" id="calBar" style="width:0%; background: linear-gradient(90deg, #4CAF50, #25D366);"></div></div>
+        <div class="macro-row" id="macrosDisplay">
+          <span style="color:#6c7e91; padding: 0.9rem;">Preencha seus dados para ver os macros</span>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.8rem; margin-top:0.5rem;">
+          <div style="background:#0D1117; border-radius:20px; padding:0.8rem; text-align:center;">
+            <div style="font-size:0.7rem; color:#8BA0B0;">TDEE basal</div>
+            <div style="font-size:1.1rem; font-weight:700; color:#A9C9E0;" id="tdeeDisplay">--</div>
+          </div>
+          <div style="background:#0D1117; border-radius:20px; padding:0.8rem; text-align:center;">
+            <div style="font-size:0.7rem; color:#8BA0B0;">IMC</div>
+            <div style="font-size:1.1rem; font-weight:700; color:#A9C9E0;" id="bmiDisplay">--</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ad-space">Espaço reservado para publicidade</div>
+
+      <div class="card">
+        <div class="section-title">🥗 Plano alimentar semanal</div>
+        <div id="weeklyMealPlan"><p style="color:#6c7e91; text-align:center; padding:2rem;">Clique em "Gerar Meu Plano" para ver seu plano alimentar</p></div>
+      </div>
+
+      <div class="card">
+        <div class="section-title">🏋️ Treino semanal</div>
+        <div id="workoutContainer"><p style="color:#6c7e91; text-align:center; padding:2rem;">Seu treino será gerado junto com o plano</p></div>
+      </div>
+
+      <div class="footer-info">
+        <div>⭐ Em breve: Plano Premium com IA</div>
+        <div>📢 Compartilhe com seus amigos</div>
+      </div>
+    </div>
+  </div>
+  <div class="disclaimer">
+    ⚠️ AVISO LEGAL: As informações geradas são apenas para fins educacionais e não substituem a avaliação de um profissional de saúde ou educação física. Consulte um nutricionista e/ou médico antes de iniciar qualquer dieta ou programa de exercícios.
+  </div>
+</div>
+
+<!-- Modal para PDF personalizado -->
+<div id="pdfModal" class="modal">
+  <div class="modal-content">
+    <h3>🎯 PLANO FITNESS PERSONALIZADO</h3>
+    <p>Você receberá um e-book exclusivo com base nas suas respostas, incluindo:</p>
+    <ul style="text-align: left; margin: 0 1rem 1rem 1rem; color:#CDDCE9;">
+      <li>✅ Plano alimentar detalhado (7 dias)</li>
+      <li>✅ Treino adaptado ao seu nível e equipamentos</li>
+      <li>✅ Orientações sobre suplementação</li>
+      <li>✅ Dicas de hábitos saudáveis</li>
+    </ul>
+    <p><strong>Valor: €5 (cerca de R$30)</strong></p>
+    <div class="modal-buttons">
+      <button id="confirmPdfBtn" class="whatsapp" style="flex:1;">✅ SIM, QUERO</button>
+      <button id="cancelPdfBtn" class="secondary" style="flex:1;">❌ NÃO, OBRIGADO</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ======================== UTILITÁRIOS ========================
+// Gerador pseudo-aleatório com seed (Mulberry32) - garante determinismo e variedade
+function createRNG(seed) {
+  let s = seed | 0;
+  return function() {
+    s |= 0; s = s + 0x6D2B79F5 | 0;
+    let t = Math.imul(s ^ s >>> 15, 1 | s);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+
+// Fisher-Yates shuffle com RNG
+function shuffleArray(arr, rng) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(rng() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// Hash melhorado baseado em todos os inputs + data para variação na regeneração
+function computeUserHash(inputs) {
+  const str = JSON.stringify(inputs);
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = ((hash << 5) - hash + str.charCodeAt(i)) | 0;
+  }
+  return Math.abs(hash) + Date.now() % 1000; // adiciona variação temporal para regeneração
+}
+
+// ======================== LIMITE SEMANAL ========================
+const STORAGE_WEEK_KEY = 'lastFreeGeneration';
+
+function getLastGenerationTime() {
+  const last = localStorage.getItem(STORAGE_WEEK_KEY);
+  return last ? parseInt(last) : 0;
+}
+
+function setLastGenerationTime() {
+  localStorage.setItem(STORAGE_WEEK_KEY, Date.now());
+}
+
+function canGenerateFree() {
+  const last = getLastGenerationTime();
+  const now = Date.now();
+  const weekMs = 7 * 24 * 60 * 60 * 1000;
+  return (now - last) >= weekMs;
+}
+
+function updateTimerDisplay() {
+  const last = getLastGenerationTime();
+  const now = Date.now();
+  const weekMs = 7 * 24 * 60 * 60 * 1000;
+  const remaining = weekMs - (now - last);
+  const timerDiv = document.getElementById('timerMessage');
+  const generateBtn = document.getElementById('generateBtn');
+  const regenerateBtn = document.getElementById('regenerateBtn');
+  if (remaining > 0 && last !== 0) {
+    const days = Math.floor(remaining / (24 * 60 * 60 * 1000));
+    const hours = Math.floor((remaining % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
+    timerDiv.innerHTML = `⏳ Próximo plano gratuito disponível em ${days} dias e ${hours} horas.`;
+    generateBtn.disabled = true;
+    regenerateBtn.disabled = true;
+  } else {
+    timerDiv.innerHTML = `✅ Você pode gerar um novo plano gratuito agora!`;
+    generateBtn.disabled = false;
+    regenerateBtn.disabled = false;
+  }
+}
+
+// ======================== BANCO DE DADOS DE ALIMENTOS ========================
+const foodDB = {
+  breakfast: [
+    { name: "Vitamina de banana + aveia + whey", tags: ["standard","gain","lose"], protein: 12, carbs: 50, fat: 4 },
+    { name: "2 ovos mexidos + 2 torradas integrais + queijo", tags: ["standard","gain"], protein: 20, carbs: 28, fat: 14 },
+    { name: "Iogurte grego + granola + frutas vermelhas", tags: ["standard","lose"], protein: 18, carbs: 42, fat: 8 },
+    { name: "Panqueca de banana + aveia + pasta de amendoim", tags: ["gain","standard"], protein: 14, carbs: 55, fat: 16 },
+    { name: "Cuscuz + frango desfiado + tomate", tags: ["standard","gain"], protein: 24, carbs: 40, fat: 7 },
+    { name: "Smoothie: whey + morango + leite + aveia", tags: ["lose","standard"], protein: 30, carbs: 32, fat: 3 },
+    { name: "Omelete (3 claras + 1 inteiro) com espinafre", tags: ["lose","standard"], protein: 22, carbs: 5, fat: 7 },
+    { name: "Mingau de aveia + canela + maçã + mel", tags: ["standard","gain"], protein: 10, carbs: 58, fat: 5 },
+    { name: "Pão integral + abacate amassado + ovo cozido", tags: ["standard","lose"], protein: 14, carbs: 28, fat: 16 },
+    { name: "Whey protein + leite desnatado + banana", tags: ["lose","standard"], protein: 32, carbs: 28, fat: 3 },
+    { name: "Tapioca (2 unidades) + queijo + frango", tags: ["gain","standard"], protein: 22, carbs: 45, fat: 10 },
+    { name: "Açaí 300ml + granola + banana", tags: ["gain"], protein: 8, carbs: 70, fat: 12 },
+    { name: "Crepioca (2 ovos + tapioca) + queijo", tags: ["standard","lose"], protein: 18, carbs: 25, fat: 12 },
+    { name: "Pão de forma integral + ricota + tomate", tags: ["lose","standard"], protein: 14, carbs: 30, fat: 6 },
+    { name: "Bowl: iogurte natural + chia + morango + mel", tags: ["lose","standard"], protein: 16, carbs: 35, fat: 9 },
+    { name: "Batata doce + 2 ovos cozidos", tags: ["gain","standard"], protein: 18, carbs: 38, fat: 10 },
+    { name: "Vitamina de mamão + aveia + linhaça", tags: ["lose","standard"], protein: 8, carbs: 42, fat: 6 },
+    { name: "Sanduíche natural: frango + alface + tomate", tags: ["lose","standard"], protein: 20, carbs: 28, fat: 6 },
+    { name: "Whey + pasta de amendoim + banana", tags: ["gain","standard"], protein: 28, carbs: 38, fat: 14 },
+    { name: "Omelete de legumes com tomate e cebola", tags: ["lose","standard"], protein: 16, carbs: 8, fat: 10 }
+  ],
+  lunch: [
+    { name: "Frango grelhado (150g) + arroz integral + brócolis", tags: ["standard","lose","gain"], protein: 38, carbs: 48, fat: 8 },
+    { name: "Filé de tilápia + quinoa + legumes no vapor", tags: ["standard","lose"], protein: 35, carbs: 42, fat: 7 },
+    { name: "Carne magra grelhada + batata doce + salada", tags: ["standard","gain"], protein: 40, carbs: 45, fat: 12 },
+    { name: "Strogonoff de frango light + arroz 7 grãos", tags: ["standard","gain"], protein: 32, carbs: 50, fat: 12 },
+    { name: "Macarrão integral + frango desfiado + molho tomate", tags: ["gain","standard"], protein: 32, carbs: 65, fat: 10 },
+    { name: "Frango ao molho de ervas + purê de batata", tags: ["gain","standard"], protein: 35, carbs: 52, fat: 14 },
+    { name: "Tofu grelhado + abobrinha + arroz integral", tags: ["lose","standard"], protein: 22, carbs: 40, fat: 10 },
+    { name: "Omelete de legumes + salada + arroz", tags: ["lose","standard"], protein: 20, carbs: 35, fat: 12 },
+    { name: "Salada de grão-de-bico + frango + azeite", tags: ["lose","standard"], protein: 28, carbs: 42, fat: 14 },
+    { name: "Bife de pato acebolado + batata + salada", tags: ["gain","standard"], protein: 36, carbs: 38, fat: 14 },
+    { name: "Salmão grelhado + arroz + aspargos", tags: ["gain","standard"], protein: 34, carbs: 40, fat: 18 },
+    { name: "Peito de frango + feijão + arroz + couve", tags: ["standard","gain"], protein: 36, carbs: 55, fat: 10 },
+    { name: "Filé de peixe + purê de mandioquinha + salada", tags: ["standard","lose"], protein: 30, carbs: 42, fat: 8 },
+    { name: "Carne moída magra + arroz + feijão + salada", tags: ["gain","standard"], protein: 34, carbs: 52, fat: 12 },
+    { name: "Frango desfiado + batata inglesa + cenoura", tags: ["standard","lose"], protein: 30, carbs: 45, fat: 7 },
+    { name: "Lentilha + frango + salada verde", tags: ["lose","standard"], protein: 32, carbs: 48, fat: 8 },
+    { name: "Espaguete de abobrinha + carne moída", tags: ["lose"], protein: 28, carbs: 22, fat: 14 },
+    { name: "Bowl: arroz + feijão + ovo + salada + azeite", tags: ["standard","gain"], protein: 26, carbs: 50, fat: 14 },
+    { name: "Frango xadrez light + arroz integral", tags: ["standard","gain"], protein: 30, carbs: 48, fat: 12 },
+    { name: "Carne de panela + legumes + arroz", tags: ["standard","gain"], protein: 35, carbs: 42, fat: 14 }
+  ],
+  dinner: [
+    { name: "Sopa de legumes + frango desfiado", tags: ["lose","standard"], protein: 22, carbs: 22, fat: 5 },
+    { name: "Omelete (3 claras + 1 inteiro) com tomate e ricota", tags: ["lose","standard"], protein: 22, carbs: 8, fat: 9 },
+    { name: "Atum em água + salada completa + azeite", tags: ["lose","standard"], protein: 30, carbs: 10, fat: 12 },
+    { name: "Wrap integral de peito de peru + cream cheese light", tags: ["standard","lose"], protein: 24, carbs: 32, fat: 10 },
+    { name: "Bowl de quinoa + legumes + frango", tags: ["standard","gain"], protein: 28, carbs: 44, fat: 10 },
+    { name: "Salmão grelhado + aspargos + purê de couve-flor", tags: ["standard","gain"], protein: 34, carbs: 18, fat: 16 },
+    { name: "Frango ao curry light + arroz", tags: ["gain","standard"], protein: 30, carbs: 38, fat: 14 },
+    { name: "Omelete de cogumelos com queijo branco", tags: ["lose","standard"], protein: 22, carbs: 8, fat: 10 },
+    { name: "Sopa creme de abóbora com gengibre + frango", tags: ["lose","standard"], protein: 18, carbs: 24, fat: 4 },
+    { name: "Peito de frango grelhado + salada + batata", tags: ["standard","lose"], protein: 32, carbs: 30, fat: 8 },
+    { name: "Filé de tilápia + legumes grelhados", tags: ["lose","standard"], protein: 28, carbs: 15, fat: 8 },
+    { name: "Sanduíche de atum no pão integral", tags: ["standard","lose"], protein: 26, carbs: 30, fat: 8 },
+    { name: "Crepioca de frango desfiado com requeijão", tags: ["standard","gain"], protein: 24, carbs: 28, fat: 12 },
+    { name: "Sopa de lentilha + torrada integral", tags: ["standard","lose"], protein: 18, carbs: 32, fat: 5 },
+    { name: "Carne moída + abobrinha refogada", tags: ["lose","standard"], protein: 28, carbs: 12, fat: 12 },
+    { name: "Omelete de espinafre + salada + queijo", tags: ["lose","standard"], protein: 20, carbs: 8, fat: 14 },
+    { name: "Frango desfiado + salada de folhas + azeite", tags: ["lose","standard"], protein: 26, carbs: 8, fat: 12 },
+    { name: "Wrap de frango + alface + tomate + cenoura", tags: ["standard","lose"], protein: 24, carbs: 28, fat: 8 },
+    { name: "Sopa de feijão + legumes + torrada", tags: ["standard","gain"], protein: 18, carbs: 38, fat: 6 },
+    { name: "Peixe grelhado + purê de batata + salada", tags: ["standard","gain"], protein: 30, carbs: 36, fat: 8 }
+  ],
+  snack: [
+    { name: "Mix de castanhas (30g) + maçã", tags: ["standard","gain","lose"], protein: 6, carbs: 22, fat: 14 },
+    { name: "Barra de proteína (caseira ou industrializada)", tags: ["standard","lose"], protein: 18, carbs: 18, fat: 6 },
+    { name: "Iogurte proteico + chia + morangos", tags: ["standard","lose"], protein: 20, carbs: 14, fat: 4 },
+    { name: "Pão integral + pasta de amendoim (20g)", tags: ["gain","standard"], protein: 10, carbs: 28, fat: 12 },
+    { name: "Queijo minas frescal + morango", tags: ["lose","standard"], protein: 12, carbs: 8, fat: 6 },
+    { name: "2 ovos cozidos + cenoura baby", tags: ["lose","standard"], protein: 14, carbs: 8, fat: 10 },
+    { name: "Shake de whey com água + 1 banana", tags: ["standard","gain"], protein: 28, carbs: 26, fat: 3 },
+    { name: "Abacate (100g) + mel + granola", tags: ["gain","standard"], protein: 4, carbs: 28, fat: 16 },
+    { name: "Iogurte natural + mel + granola", tags: ["standard","gain"], protein: 10, carbs: 32, fat: 6 },
+    { name: "Rice cake + pasta de amendoim + banana", tags: ["gain","standard"], protein: 8, carbs: 34, fat: 10 },
+    { name: "Mix de nuts + 1 fatia de melão", tags: ["lose","standard"], protein: 6, carbs: 18, fat: 12 },
+    { name: "Whey protein shake com leite + canela", tags: ["standard","lose"], protein: 28, carbs: 12, fat: 3 },
+    { name: "Biscoito de arroz + queijo cottage", tags: ["lose","standard"], protein: 10, carbs: 18, fat: 4 },
+    { name: "Banana + 1 col. pasta de amendoim", tags: ["gain","standard"], protein: 7, carbs: 32, fat: 10 },
+    { name: "Iogurte grego + aveia + uvas passas", tags: ["standard","gain"], protein: 16, carbs: 36, fat: 6 },
+    { name: "Torrada integral + homus (pasta de grão)", tags: ["lose","standard"], protein: 8, carbs: 22, fat: 8 },
+    { name: "Fruta da época + 10 amêndoas", tags: ["lose","standard"], protein: 5, carbs: 20, fat: 9 },
+    { name: "Shake: whey + leite + aveia + morango", tags: ["gain","standard"], protein: 26, carbs: 34, fat: 5 },
+    { name: "Pipoca caseira (sem óleo excessivo)", tags: ["lose","standard"], protein: 4, carbs: 24, fat: 6 },
+    { name: "Queijo + nozes + uvas", tags: ["standard","gain"], protein: 12, carbs: 16, fat: 14 }
+  ],
+  supplements: [
+    { name: "Whey Protein (pós-treino)", timing: "Pós-treino", note: "20-30g com água ou leite" },
+    { name: "Creatina (3-5g/dia)", timing: "Qualquer horário", note: "Todos os dias, mesmo sem treino" },
+    { name: "Multivitamínico", timing: "Manhã", note: "Com o café da manhã" },
+    { name: "Ômega 3", timing: "Almoço", note: "1-2 cápsulas com refeições" },
+    { name: "Vitamina D3", timing: "Manhã", note: "2000-4000 UI/dia" }
+  ]
+};
+
+// ======================== BIBLIOTECA DE EXERCÍCIOS ========================
+const exerciseDB = [
+  // Pernas (legs)
+  { name: "Agachamento livre", muscle: "legs", equip: ["full"], type: "compound", difficulty: 2 },
+  { name: "Agachamento com halteres", muscle: "legs", equip: ["basic","full"], type: "compound", difficulty: 1 },
+  { name: "Agachamento (peso corporal)", muscle: "legs", equip: ["bodyweight","basic","full"], type: "compound", difficulty: 0 },
+  { name: "Agachamento búlgaro", muscle: "legs", equip: ["bodyweight","basic","full"], type: "compound", difficulty: 2 },
+  { name: "Avanço/Passada", muscle: "legs", equip: ["bodyweight","basic","full"], type: "compound", difficulty: 1 },
+  { name: "Stiff (terra romeno)", muscle: "legs", equip: ["basic","full"], type: "compound", difficulty: 2 },
+  { name: "Leg press 45°", muscle: "legs", equip: ["full"], type: "compound", difficulty: 1 },
+  { name: "Cadeira extensora", muscle: "legs", equip: ["full"], type: "isolation", difficulty: 0 },
+  { name: "Mesa flexora", muscle: "legs", equip: ["full"], type: "isolation", difficulty: 0 },
+  { name: "Elevação de panturrilha em pé", muscle: "legs", equip: ["bodyweight","basic","full"], type: "isolation", difficulty: 0 },
+  { name: "Panturrilha no leg press", muscle: "legs", equip: ["full"], type: "isolation", difficulty: 0 },
+  { name: "Sumô squat com halter", muscle: "legs", equip: ["basic","full"], type: "compound", difficulty: 1 },
+  { name: "Step-up no banco", muscle: "legs", equip: ["bodyweight","basic","full"], type: "compound", difficulty: 1 },
+  { name: "Wall sit (agachamento isométrico)", muscle: "legs", equip: ["bodyweight","basic","full"], type: "isolation", difficulty: 0 },
+  { name: "Hip thrust com barra", muscle: "legs", equip: ["full"], type: "compound", difficulty: 2 },
+  { name: "Hip thrust com halter", muscle: "legs", equip: ["basic","full"], type: "compound", difficulty: 1 },
+
+  // Peito (chest)
+  { name: "Supino reto com barra", muscle: "chest", equip: ["full"], type: "compound", difficulty: 2 },
+  { name: "Supino reto com halteres", muscle: "chest", equip: ["basic","full"], type: "compound", difficulty: 1 },
+  { name: "Flexão de braço", muscle: "chest", equip: ["bodyweight","basic","full"], type: "compound", difficulty: 0 },
+  { name: "Flexão diamante", muscle: "chest", equip: ["bodyweight","basic","full"], type: "compound", difficulty: 2 },
+  { name: "Supino inclinado halteres", muscle: "chest", equip: ["basic","full"], type: "compound", difficulty: 2 },
+  { name: "Crossover (cabos)", muscle: "chest", equip: ["full"], type: "isolation", difficulty: 1 },
+  { name: "Fly com halteres (crucifixo)", muscle: "chest", equip: ["basic","full"], type: "isolation", difficulty: 1 },
+  { name: "Flexão com pés elevados", muscle: "chest", equip: ["bodyweight","basic","full"], type: "compound", difficulty: 2 },
+  { name: "Peck deck / Voador", muscle: "chest", equip: ["full"], type: "isolation", difficulty: 0 },
+
+  // Costas (back)
+  { name: "Barra fixa (pull-up)", muscle: "back", equip: ["bodyweight","basic","full"], type: "compound", difficulty: 2 },
+  { name: "Remada curvada com barra", muscle: "back", equip: ["full"], type: "compound", difficulty: 2 },
+  { name: "Remada curvada com halteres", muscle: "back", equip: ["basic","full"], type: "compound", difficulty: 1 },
+  { name: "Remada unilateral (serrote)", muscle: "back", equip: ["basic","full"], type: "compound", difficulty: 1 },
+  { name: "Puxada frontal (lat pulldown)", muscle: "back", equip: ["full"], type: "compound", difficulty: 1 },
+  { name: "Remada cavalinho (T-bar)", muscle: "back", equip: ["full"], type: "compound", difficulty: 2 },
+  { name: "Remada sentado (cabos)", muscle: "back", equip: ["full"], type: "compound", difficulty: 1 },
+  { name: "Pullover com halter", muscle: "back", equip: ["basic","full"], type: "isolation", difficulty: 1 },
+  { name: "Superman (lombar)", muscle: "back", equip: ["bodyweight","basic","full"], type: "isolation", difficulty: 0 },
+  { name: "Face pull (cabos)", muscle: "back", equip: ["full"], type: "isolation", difficulty: 1 },
+
+  // Ombros (shoulders)
+  { name: "Desenvolvimento com halteres", muscle: "shoulders", equip: ["basic","full"], type: "compound", difficulty: 1 },
+  { name: "Desenvolvimento militar (barra)", muscle: "shoulders", equip: ["full"], type: "compound", difficulty: 2 },
+  { name: "Elevação lateral com halteres", muscle: "shoulders", equip: ["basic","full"], type: "isolation", difficulty: 0 },
+  { name: "Elevação frontal com halteres", muscle: "shoulders", equip: ["basic","full"], type: "isolation", difficulty: 0 },
+  { name: "Remada alta com halteres", muscle: "shoulders", equip: ["basic","full"], type: "compound", difficulty: 1 },
+  { name: "Face pull", muscle: "shoulders", equip: ["full"], type: "isolation", difficulty: 1 },
+  { name: "Encolhimento com halteres", muscle: "shoulders", equip: ["basic","full"], type: "isolation", difficulty: 0 },
+  { name: "Elevação lateral no cabo", muscle: "shoulders", equip: ["full"], type: "isolation", difficulty: 1 },
+  { name: "Pike push-up", muscle: "shoulders", equip: ["bodyweight","basic","full"], type: "compound", difficulty: 2 },
+
+  // Braços (arms)
+  { name: "Rosca direta com halteres", muscle: "arms", equip: ["basic","full"], type: "isolation", difficulty: 0 },
+  { name: "Rosca alternada (halteres)", muscle: "arms", equip: ["basic","full"], type: "isolation", difficulty: 0 },
+  { name: "Rosca martelo", muscle: "arms", equip: ["basic","full"], type: "isolation", difficulty: 0 },
+  { name: "Tríceps testa com halteres", muscle: "arms", equip: ["basic","full"], type: "isolation", difficulty: 1 },
+  { name: "Tríceps corda (cabos)", muscle: "arms", equip: ["full"], type: "isolation", difficulty: 1 },
+  { name: "Tríceps francês", muscle: "arms", equip: ["basic","full"], type: "isolation", difficulty: 2 },
+  { name: "Mergulho em banco (tríceps)", muscle: "arms", equip: ["bodyweight","basic","full"], type: "compound", difficulty: 1 },
+  { name: "Rosca concentrada", muscle: "arms", equip: ["basic","full"], type: "isolation", difficulty: 1 },
+  { name: "Rosca no cabo", muscle: "arms", equip: ["full"], type: "isolation", difficulty: 0 },
+  { name: "Tríceps kickback", muscle: "arms", equip: ["basic","full"], type: "isolation", difficulty: 0 },
+  { name: "Flexão diamante", muscle: "arms", equip: ["bodyweight","basic","full"], type: "compound", difficulty: 2 },
+
+  // Core (core)
+  { name: "Prancha frontal", muscle: "core", equip: ["bodyweight","basic","full"], type: "isolation", difficulty: 0 },
+  { name: "Prancha lateral", muscle: "core", equip: ["bodyweight","basic","full"], type: "isolation", difficulty: 1 },
+  { name: "Abdominal crunch", muscle: "core", equip: ["bodyweight","basic","full"], type: "isolation", difficulty: 0 },
+  { name: "Abdominal infra", muscle: "core", equip: ["bodyweight","basic","full"], type: "isolation", difficulty: 1 },
+  { name: "Abdominal oblíquo", muscle: "core", equip: ["bodyweight","basic","full"], type: "isolation", difficulty: 1 },
+  { name: "Elevação de pernas suspenso", muscle: "core", equip: ["bodyweight","basic","full"], type: "compound", difficulty: 2 },
+  { name: "Russian twist", muscle: "core", equip: ["bodyweight","basic","full"], type: "isolation", difficulty: 1 },
+  { name: "Mountain climbers", muscle: "core", equip: ["bodyweight","basic","full"], type: "compound", difficulty: 1 },
+  { name: "Dead bug", muscle: "core", equip: ["bodyweight","basic","full"], type: "isolation", difficulty: 0 },
+  { name: "Roda abdominal", muscle: "core", equip: ["basic","full"], type: "compound", difficulty: 2 },
+  { name: "Abdominal na máquina", muscle: "core", equip: ["full"], type: "isolation", difficulty: 0 },
+  { name: "Prancha com toque no ombro", muscle: "core", equip: ["bodyweight","basic","full"], type: "isolation", difficulty: 1 }
+];
+
+// ======================== CÁLCULOS METABÓLICOS ========================
+function calculateBMR(weight, height, age, sex) {
+  if (sex === 'male') {
+    return 10 * weight + 6.25 * height - 5 * age + 5;
+  }
+  return 10 * weight + 6.25 * height - 5 * age - 161;
+}
+
+function calculateTDEE(bmr, activityMultiplier) {
+  return bmr * activityMultiplier;
+}
+
+function adjustCaloriesForGoal(tdee, goal) {
+  switch (goal) {
+    case 'lose': return tdee * 0.80;
+    case 'gain': return tdee * 1.12;
+    default: return tdee;
+  }
+}
+
+function calculateMacros(targetCalories, weight, goal) {
+  let proteinPerKg, fatPerKg;
+  if (goal === 'lose') {
+    proteinPerKg = 2.2;
+    fatPerKg = 0.8;
+  } else if (goal === 'gain') {
+    proteinPerKg = 1.8;
+    fatPerKg = 1.0;
+  } else {
+    proteinPerKg = 2.0;
+    fatPerKg = 0.9;
+  }
+
+  let protein = Math.round(proteinPerKg * weight);
+  let fat = Math.round(fatPerKg * weight);
+  let caloriesFromProtein = protein * 4;
+  let caloriesFromFat = fat * 9;
+  let remainingCalories = targetCalories - caloriesFromProtein - caloriesFromFat;
+  let carbs = Math.max(Math.round(remainingCalories / 4), 50);
+
+  return { protein, carbs, fat, calories: targetCalories };
+}
+
+function calculateBMI(weight, heightCm) {
+  const heightM = heightCm / 100;
+  return (weight / (heightM * heightM)).toFixed(1);
+}
+
+// ======================== GERAÇÃO DE DIETA ========================
+function filterFoodsByGoal(foods, goal) {
+  let goalMap = { lose: 'lose', gain: 'gain', maintain: 'standard' };
+  let targetTag = goalMap[goal];
+
+  let primary = foods.filter(f => f.tags.includes(targetTag));
+  let secondary = foods.filter(f => f.tags.includes('standard') && !f.tags.includes(targetTag));
+
+  if (primary.length >= 4) return primary;
+  return [...primary, ...secondary];
+}
+
+function selectMealForDay(filteredFoods, dayIndex, totalDays, rng) {
+  let available = [...filteredFoods];
+  let idx = Math.floor(rng() * available.length);
+  return available[idx];
+}
+
+function generateWeeklyDiet(goal, seed) {
+  const rng = createRNG(seed);
+  const weekDays = ["Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira", "Sábado", "Domingo"];
+
+  const breakfastPool = filterFoodsByGoal(foodDB.breakfast, goal);
+  const lunchPool = filterFoodsByGoal(foodDB.lunch, goal);
+  const dinnerPool = filterFoodsByGoal(foodDB.dinner, goal);
+  const snackPool = filterFoodsByGoal(foodDB.snack, goal);
+
+  const shuffledBreakfast = shuffleArray(breakfastPool, rng);
+  const shuffledLunch = shuffleArray(lunchPool, rng);
+  const shuffledDinner = shuffleArray(dinnerPool, rng);
+  const shuffledSnack = shuffleArray(snackPool, rng);
+
+  let previousMeals = { breakfast: -1, lunch: -1, dinner: -1, snack: -1 };
+  const weeklyPlan = [];
+
+  for (let day = 0; day < 7; day++) {
+    let mealIndices = {};
+
+    function pickFromPool(pool, category) {
+      let idx = day % pool.length;
+      idx = (idx + Math.floor(rng() * 3)) % pool.length;
+      if (idx === previousMeals[category] && pool.length > 1) {
+        idx = (idx + 1) % pool.length;
+      }
+      previousMeals[category] = idx;
+      return { ...pool[idx], index: idx };
+    }
+
+    const breakfast = pickFromPool(shuffledBreakfast, 'breakfast');
+    const lunch = pickFromPool(shuffledLunch, 'lunch');
+    const dinner = pickFromPool(shuffledDinner, 'dinner');
+    const snack = pickFromPool(shuffledSnack, 'snack');
+
+    weeklyPlan.push({
+      day: weekDays[day],
+      meals: {
+        breakfast: { name: breakfast.name, protein: breakfast.protein, carbs: breakfast.carbs, fat: breakfast.fat },
+        lunch: { name: lunch.name, protein: lunch.protein, carbs: lunch.carbs, fat: lunch.fat },
+        dinner: { name: dinner.name, protein: dinner.protein, carbs: dinner.carbs, fat: dinner.fat },
+        snack: { name: snack.name, protein: snack.protein, carbs: snack.carbs, fat: snack.fat }
+      },
+      dailyTotals: {
+        protein: breakfast.protein + lunch.protein + dinner.protein + snack.protein,
+        carbs: breakfast.carbs + lunch.carbs + dinner.carbs + snack.carbs,
+        fat: breakfast.fat + lunch.fat + dinner.fat + snack.fat,
+        calories: (breakfast.protein + lunch.protein + dinner.protein + snack.protein) * 4 +
+                  (breakfast.carbs + lunch.carbs + dinner.carbs + snack.carbs) * 4 +
+                  (breakfast.fat + lunch.fat + dinner.fat + snack.fat) * 9
+      }
+    });
+  }
+
+  return weeklyPlan;
+}
+
+// ======================== GERAÇÃO DE TREINO ========================
+function filterExercisesByEquipment(exercises, equipmentType) {
+  return exercises.filter(ex => ex.equip.includes(equipmentType));
+}
+
+function getExerciseConfig(level, goal, timeMin) {
+  let sets, reps, restSec, warmupMin;
+
+  if (level === 'beginner') {
+    sets = (timeMin <= 20) ? 2 : (timeMin <= 30) ? 3 : 3;
+    reps = (goal === 'lose') ? "12-15" : (goal === 'gain') ? "8-10" : "10-12";
+    restSec = 60;
+    warmupMin = 5;
+  } else {
+    sets = (timeMin <= 20) ? 3 : (timeMin <= 30) ? 3 : (timeMin <= 45) ? 4 : 4;
+    reps = (goal === 'lose') ? "12-15" : (goal === 'gain') ? "6-8" : "8-12";
+    restSec = (goal === 'lose') ? 45 : 90;
+    warmupMin = (timeMin >= 45) ? 8 : 5;
+  }
+
+  return { sets, reps, restSec, warmupMin };
+}
+
+function getWeeklySplit(level, daysPerWeek) {
+  if (level === 'beginner') {
+    return [
+      { day: "Segunda-feira", focus: "Full Body A", muscles: ["legs", "chest", "back"] },
+      { day: "Terça-feira", focus: "Descanso ativo", muscles: [], isRest: true, activity: "Caminhada 30min ou alongamento" },
+      { day: "Quarta-feira", focus: "Full Body B", muscles: ["legs", "shoulders", "arms"] },
+      { day: "Quinta-feira", focus: "Descanso ativo", muscles: [], isRest: true, activity: "Yoga ou mobilidade" },
+      { day: "Sexta-feira", focus: "Full Body C", muscles: ["legs", "chest", "back", "core"] },
+      { day: "Sábado", focus: "Cardio leve", muscles: [], isRest: true, activity: "Caminhada / corrida leve 20-30min" },
+      { day: "Domingo", focus: "Descanso total", muscles: [], isRest: true, activity: "Recuperação" }
+    ];
+  } else {
+    return [
+      { day: "Segunda-feira", focus: "Upper Body A (Peito + Costas)", muscles: ["chest", "back", "shoulders"] },
+      { day: "Terça-feira", focus: "Lower Body A (Quadril + Posterior)", muscles: ["legs"] },
+      { day: "Quarta-feira", focus: "Upper Body B (Ombros + Braços)", muscles: ["shoulders", "arms", "chest"] },
+      { day: "Quinta-feira", focus: "Lower Body B (Glúteo + Panturrilha)", muscles: ["legs", "core"] },
+      { day: "Sexta-feira", focus: "Full Body", muscles: ["chest", "back", "legs", "shoulders"] },
+      { day: "Sábado", focus: "Cardio + Core", muscles: ["core"], isCardio: true, activity: "20-30min cardio moderado" },
+      { day: "Domingo", focus: "Descanso total", muscles: [], isRest: true, activity: "Recuperação" }
+    ];
+  }
+}
+
+function selectExercisesForDay(splitDay, availableExercises, targetCount, rng) {
+  if (splitDay.isRest || splitDay.isCardio) return [];
+
+  let muscles = splitDay.muscles;
+  let selected = [];
+  let usedNames = new Set();
+
+  let compounds = availableExercises.filter(ex => ex.type === 'compound');
+  let isolations = availableExercises.filter(ex => ex.type === 'isolation');
+
+  for (let muscle of muscles) {
+    let muscleExercises = compounds.filter(ex => ex.muscle === muscle && !usedNames.has(ex.name));
+    if (muscleExercises.length === 0) {
+      muscleExercises = availableExercises.filter(ex => ex.muscle === muscle && !usedNames.has(ex.name));
+    }
+
+    if (muscleExercises.length > 0) {
+      let shuffled = shuffleArray(muscleExercises, rng);
+      let pick = shuffled[0];
+      selected.push(pick);
+      usedNames.add(pick.name);
+    }
+  }
+
+  let remaining = targetCount - selected.length;
+  if (remaining > 0) {
+    let available = isolations.filter(ex => !usedNames.has(ex.name) && muscles.includes(ex.muscle));
+    if (available.length === 0) {
+      available = isolations.filter(ex => !usedNames.has(ex.name));
+    }
+    let shuffled = shuffleArray(available, rng);
+    selected.push(...shuffled.slice(0, remaining));
+  }
+
+  if (selected.length < targetCount) {
+    let coreEx = availableExercises.filter(ex => ex.muscle === 'core' && !usedNames.has(ex.name));
+    if (coreEx.length > 0) {
+      let shuffled = shuffleArray(coreEx, rng);
+      selected.push(...shuffled.slice(0, targetCount - selected.length));
+    }
+  }
+
+  return selected.slice(0, targetCount);
+}
+
+function generateWeeklyWorkout(level, goal, timeMin, equipment, seed) {
+  const rng = createRNG(seed + 7919);
+  let available = filterExercisesByEquipment(exerciseDB, equipment);
+  if (available.length < 10) {
+    available = filterExercisesByEquipment(exerciseDB, 'bodyweight');
+    if (available.length < 10) available = exerciseDB;
+  }
+  const config = getExerciseConfig(level, goal, timeMin);
+  let exercisesPerDay;
+  if (timeMin <= 20) exercisesPerDay = 4;
+  else if (timeMin <= 30) exercisesPerDay = 5;
+  else if (timeMin <= 45) exercisesPerDay = 6;
+  else exercisesPerDay = 7;
+
+  const split = getWeeklySplit(level, exercisesPerDay);
+  const weeklyPlan = [];
+  let weeklyUsedExercises = new Set();
+
+  for (let dayPlan of split) {
+    if (dayPlan.isRest) {
+      weeklyPlan.push({
+        day: dayPlan.day,
+        focus: dayPlan.focus,
+        isRest: true,
+        activity: dayPlan.activity,
+        exercises: []
+      });
+      continue;
+    }
+
+    if (dayPlan.isCardio) {
+      weeklyPlan.push({
+        day: dayPlan.day,
+        focus: dayPlan.focus,
+        isCardio: true,
+        activity: dayPlan.activity,
+        exercises: dayPlan.muscles.map(m => ({
+          name: m === 'core' ? "Prancha + Russian Twist + Abdominal" : "Cardio moderado",
+          sets: m === 'core' ? 3 : 1,
+          reps: m === 'core' ? "30-60s cada" : `${config.warmupMin + 15}-${config.warmupMin + 25}min`,
+          rest: "30s entre exercícios de core",
+          muscle: m
+        })),
+        warmup: "5min aquecimento leve"
+      });
+      continue;
+    }
+
+    let exercises = selectExercisesForDay(dayPlan, available, exercisesPerDay, rng);
+    if (exercises.length < exercisesPerDay) {
+      let extra = available.filter(ex => !weeklyUsedExercises.has(ex.name) && ex.type === 'compound');
+      let shuffled = shuffleArray(extra, rng);
+      for (let ex of shuffled) {
+        if (exercises.length >= exercisesPerDay) break;
+        if (!exercises.find(e => e.name === ex.name)) {
+          exercises.push(ex);
+        }
+      }
+    }
+    exercises.forEach(ex => weeklyUsedExercises.add(ex.name));
+
+    let formattedExercises = exercises.map((ex, idx) => ({
+      name: ex.name,
+      sets: config.sets,
+      reps: config.reps,
+      rest: `${config.restSec}s`,
+      muscle: ex.muscle,
+      type: ex.type,
+      difficulty: ex.difficulty,
+      note: idx === 0 ? "⚡ Principal do dia" : (ex.type === 'compound' ? "🔥 Composto" : "💪 Isolado")
+    }));
+
+    weeklyPlan.push({
+      day: dayPlan.day,
+      focus: dayPlan.focus,
+      isRest: false,
+      isCardio: false,
+      warmup: `${config.warmupMin}min aquecimento (polichinelos + mobilidade)`,
+      exercises: formattedExercises
+    });
+  }
+  return { plan: weeklyPlan, config };
+}
+
+// ======================== PERSISTÊNCIA ========================
+const STORAGE_KEY = 'energiaFitness_v2';
+
+function saveState(data) {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  } catch (e) {
+    console.warn('Não foi possível salvar no localStorage:', e);
+  }
+}
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch (e) {
+    return null;
+  }
+}
+
+function clearState() {
+  localStorage.removeItem(STORAGE_KEY);
+}
+
+// ======================== RENDERIZAÇÃO ========================
+function renderStats(calories, macros, tdee, bmi) {
+  document.getElementById('totalCaloriesDisplay').textContent = `${Math.round(calories)} kcal/dia`;
+
+  const macrosHtml = `
+    <span class="macro-item">🥩 Proteína: ${macros.protein}g (${Math.round(macros.protein * 4)} kcal)</span>
+    <span class="macro-item">🍚 Carboidratos: ${macros.carbs}g (${Math.round(macros.carbs * 4)} kcal)</span>
+    <span class="macro-item">🧈 Gorduras: ${macros.fat}g (${Math.round(macros.fat * 9)} kcal)</span>
+  `;
+  document.getElementById('macrosDisplay').innerHTML = macrosHtml;
+
+  const pct = Math.min((calories / 4000) * 100, 100);
+  const bar = document.getElementById('calBar');
+  bar.style.width = pct + '%';
+  if (pct > 70) bar.style.background = 'linear-gradient(90deg, #FF9800, #FF5722)';
+  else bar.style.background = 'linear-gradient(90deg, #4CAF50, #25D366)';
+
+  document.getElementById('tdeeDisplay').textContent = `${Math.round(tdee)} kcal`;
+  const bmiVal = parseFloat(bmi);
+  document.getElementById('bmiDisplay').textContent = bmi;
+  if (bmiVal < 18.5) document.getElementById('bmiDisplay').style.color = '#2196F3';
+  else if (bmiVal < 25) document.getElementById('bmiDisplay').style.color = '#4CAF50';
+  else if (bmiVal < 30) document.getElementById('bmiDisplay').style.color = '#FF9800';
+  else document.getElementById('bmiDisplay').style.color = '#F44336';
+
+  const goalSelect = document.getElementById('goal');
+  document.getElementById('goalBadge').textContent = goalSelect.options[goalSelect.selectedIndex].text;
+}
+
+function renderDietPlan(weeklyDiet, macros) {
+  const labels = { breakfast: '🌅 Café da manhã', lunch: '☀️ Almoço', dinner: '🌙 Jantar', snack: '🍎 Lanche' };
+  let html = '<div class="weekly-plan">';
+
+  weeklyDiet.forEach((day, idx) => {
+    html += `<div class="day-card" style="animation-delay: ${idx * 0.06}s">`;
+    html += `<div class="day-title">📅 ${day.day}</div>`;
+
+    for (let [key, label] of Object.entries(labels)) {
+      const meal = day.meals[key];
+      html += `
+        <div class="meal-row">
+          <span class="meal-badge">${label}</span>
+          <span class="meal-text">${meal.name}</span>
+          <span style="font-size:0.65rem; color:#6c7e91; margin-left:auto;">P:${meal.protein}g C:${meal.carbs}g G:${meal.fat}g</span>
+        </div>
+      `;
+    }
+
+    html += `
+      <div style="margin-top:0.8rem; padding-top:0.6rem; border-top:1px solid #1E2A36; font-size:0.75rem; color:#8BA0B0;">
+        Total dia: ${day.dailyTotals.calories} kcal | P:${day.dailyTotals.protein}g C:${day.dailyTotals.carbs}g G:${day.dailyTotals.fat}g
+      </div>
+    `;
+    html += '</div>';
+  });
+
+  html += '</div>';
+  document.getElementById('weeklyMealPlan').innerHTML = html;
+}
+
+function renderWorkoutPlan(workoutData) {
+  const { plan, config } = workoutData;
+  let html = '<div class="workout-list">';
+
+  html += `
+    <div style="background:#1A242F; border-radius:20px; padding:1rem; margin-bottom:1rem; display:grid; grid-template-columns:repeat(auto-fit, minmax(140px, 1fr)); gap:0.8rem;">
+      <div style="text-align:center;"><div style="font-size:0.7rem; color:#8BA0B0;">Séries</div><div style="font-size:1.1rem; font-weight:700; color:#A9C9E0;">${config.sets}x</div></div>
+      <div style="text-align:center;"><div style="font-size:0.7rem; color:#8BA0B0;">Repetições</div><div style="font-size:1.1rem; font-weight:700; color:#A9C9E0;">${config.reps}</div></div>
+      <div style="text-align:center;"><div style="font-size:0.7rem; color:#8BA0B0;">Descanso</div><div style="font-size:1.1rem; font-weight:700; color:#A9C9E0;">${config.restSec}s</div></div>
+      <div style="text-align:center;"><div style="font-size:0.7rem; color:#8BA0B0;">Aquecimento</div><div style="font-size:1.1rem; font-weight:700; color:#A9C9E0;">${config.warmupMin}min</div></div>
+    </div>
+  `;
+
+  plan.forEach((day, idx) => {
+    html += `<div class="workout-day ${day.isRest ? 'rest-day' : ''}" style="animation-delay: ${idx * 0.07}s">`;
+    html += `<div class="workout-title">${day.isRest ? '😴' : day.isCardio ? '🏃' : '📆'} ${day.day} — ${day.focus}</div>`;
+
+    if (day.isRest) {
+      html += `<div style="color:#8BA0B0; font-size:0.9rem; padding:0.5rem 0;">${day.activity}</div>`;
+      html += '</div>';
+      return;
+    }
+
+    if (day.warmup) {
+      html += `<div style="color:#FF9800; font-size:0.8rem; font-weight:600; margin-bottom:0.5rem;">🔥 ${day.warmup}</div>`;
+    }
+
+    day.exercises.forEach(ex => {
+      html += `
+        <div class="exercise-item">
+          <span>${ex.note ? `<span style="font-size:0.65rem; margin-right:4px;">${ex.note}</span>` : ''}${ex.name}</span>
+          <span style="font-weight:600; white-space:nowrap; margin-left:0.5rem;">${ex.sets}×${ex.reps} <span style="color:#6c7e91; font-weight:400;">(${ex.rest})</span></span>
+        </div>
+      `;
+    });
+
+    html += '</div>';
+  });
+
+  html += '</div>';
+  document.getElementById('workoutContainer').innerHTML = html;
+}
+
+// ======================== GERAÇÃO COMPLETA ========================
+function generateFullPlan() {
+  // Verifica limite semanal
+  if (!canGenerateFree()) {
+    alert("Você já gerou um plano gratuito esta semana. Aguarde o contador para gerar outro.");
+    updateTimerDisplay();
+    return;
+  }
+
+  const btn = document.getElementById('generateBtn');
+  const origText = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = '<span class="loading-spinner"></span> Gerando plano...';
+
+  setTimeout(() => {
+    try {
+      const weight = parseFloat(document.getElementById('weight').value);
+      const height = parseFloat(document.getElementById('height').value);
+      const age = parseInt(document.getElementById('age').value);
+      const sex = document.getElementById('sex').value;
+      const activity = parseFloat(document.getElementById('activity').value);
+      const goal = document.getElementById('goal').value;
+      const level = document.getElementById('trainingLevel').value;
+      const timeMin = parseInt(document.getElementById('timeAvailable').value);
+      const equipment = document.getElementById('equipment').value;
+
+      if (isNaN(weight) || weight < 30 || weight > 300) { alert('Peso deve ser entre 30 e 300 kg.'); resetBtn(btn, origText); return; }
+      if (isNaN(height) || height < 100 || height > 250) { alert('Altura deve ser entre 100 e 250 cm.'); resetBtn(btn, origText); return; }
+      if (isNaN(age) || age < 14 || age > 100) { alert('Idade deve ser entre 14 e 100 anos.'); resetBtn(btn, origText); return; }
+
+      const bmr = calculateBMR(weight, height, age, sex);
+      const tdee = calculateTDEE(bmr, activity);
+      const targetCal = adjustCaloriesForGoal(tdee, goal);
+      const macros = calculateMacros(targetCal, weight, goal);
+      const bmi = calculateBMI(weight, height);
+
+      const seed = computeUserHash({ weight, height, age, sex, goal, level, timeMin, equipment });
+      const weeklyDiet = generateWeeklyDiet(goal, seed);
+      const workoutData = generateWeeklyWorkout(level, goal, timeMin, equipment, seed);
+
+      const stateData = {
+        inputs: { weight, height, age, sex, activity, goal, level, timeMin, equipment },
+        results: { bmr, tdee, targetCal, macros, bmi, seed },
+        diet: weeklyDiet,
+        workout: workoutData,
+        timestamp: Date.now()
+      };
+      saveState(stateData);
+
+      renderStats(targetCal, macros, tdee, bmi);
+      renderDietPlan(weeklyDiet, macros);
+      renderWorkoutPlan(workoutData);
+
+      // Marca a data da geração bem-sucedida
+      setLastGenerationTime();
+      updateTimerDisplay();
+
+    } catch (err) {
+      console.error('Erro ao gerar plano:', err);
+      alert('Ocorreu um erro ao gerar o plano. Tente novamente.');
+    }
+    resetBtn(btn, origText);
+  }, 600);
+}
+
+function resetBtn(btn, text) {
+  btn.disabled = false;
+  btn.innerHTML = text;
+}
+
+function loadSavedPlan() {
+  const saved = loadState();
+  if (!saved || !saved.inputs) return false;
+
+  const inp = saved.inputs;
+  document.getElementById('weight').value = inp.weight;
+  document.getElementById('height').value = inp.height;
+  document.getElementById('age').value = inp.age;
+  document.getElementById('sex').value = inp.sex;
+  document.getElementById('activity').value = inp.activity;
+  document.getElementById('goal').value = inp.goal;
+  document.getElementById('trainingLevel').value = inp.level;
+  document.getElementById('timeAvailable').value = inp.timeMin;
+  document.getElementById('equipment').value = inp.equipment;
+
+  const res = saved.results;
+  renderStats(res.targetCal, res.macros, res.tdee, res.bmi);
+  renderDietPlan(saved.diet, res.macros);
+  renderWorkoutPlan(saved.workout);
+
+  return true;
+}
+
+// ======================== EVENTOS ========================
+document.getElementById('generateBtn').addEventListener('click', generateFullPlan);
+document.getElementById('regenerateBtn').addEventListener('click', generateFullPlan);
+
+const modal = document.getElementById('pdfModal');
+document.getElementById('btnPdfPersonalizado').addEventListener('click', () => modal.style.display = 'flex');
+document.getElementById('cancelPdfBtn').addEventListener('click', () => modal.style.display = 'none');
+window.addEventListener('click', (e) => { if (e.target === modal) modal.style.display = 'none'; });
+
+// NÚMERO ATUALIZADO: 962146991 (assumindo Portugal: 351962146991)
+// Se for Brasil, altere para 5511962146991 (com DDD 11). Como o usuário não especificou país, usei formato internacional.
+document.getElementById('confirmPdfBtn').addEventListener('click', () => {
+  modal.style.display = 'none';
+  const inp = {
+    peso: document.getElementById('weight').value,
+    altura: document.getElementById('height').value,
+    idade: document.getElementById('age').value,
+    sexo: document.getElementById('sex').options[document.getElementById('sex').selectedIndex].text,
+    atividade: document.getElementById('activity').options[document.getElementById('activity').selectedIndex].text,
+    objetivo: document.getElementById('goal').options[document.getElementById('goal').selectedIndex].text,
+    nivel: document.getElementById('trainingLevel').options[document.getElementById('trainingLevel').selectedIndex].text,
+    tempo: document.getElementById('timeAvailable').value,
+    equip: document.getElementById('equipment').options[document.getElementById('equipment').selectedIndex].text
+  };
+  const msg = `*NOVO PEDIDO DE PDF PERSONALIZADO*%0A%0A📊 Dados:%0A- Peso: ${inp.peso} kg%0A- Altura: ${inp.altura} cm%0A- Idade: ${inp.idade}%0A- Sexo: ${inp.sexo}%0A- Atividade: ${inp.atividade}%0A- Objetivo: ${inp.objetivo}%0A- Nível treino: ${inp.nivel}%0A- Tempo: ${inp.tempo} min%0A- Equipamentos: ${inp.equip}%0A%0A🔗 Aguardando link de pagamento.`;
+  window.open(`https://wa.me/351962146991?text=${msg}`, '_blank');
+});
+
+// ======================== INICIALIZAÇÃO ========================
+function init() {
+  updateTimerDisplay();
+  if (!loadSavedPlan()) {
+    generateFullPlan();
+  }
+}
+init();
+</script>
+</body>
+</html>
