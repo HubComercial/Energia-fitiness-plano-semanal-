@@ -776,7 +776,7 @@ function changeData() {
   document.getElementById('step1').classList.add('active');
 }
 
-// ======================== WHATSAPP CORRIGIDO (mensagem com quebras de linha reais) ========================
+// ======================== WHATSAPP CORRIGIDO (método robusto com link e fallback) ========================
 function sendToWhatsApp() {
   const saved = loadState();
   if (!saved || !saved.inputs) {
@@ -785,10 +785,29 @@ function sendToWhatsApp() {
   }
   const i = saved.inputs;
   const freqText = document.getElementById('desiredFrequency').options[document.getElementById('desiredFrequency').selectedIndex].text;
-  // Usa quebras de linha reais (\n) e depois codifica a mensagem completa
   const msg = `*NOVO PEDIDO DE PDF PERSONALIZADO*\n\n📊 *Dados do cliente*:\n- Peso: ${i.weight} kg\n- Altura: ${i.height} cm\n- Idade: ${i.age} anos\n- Sexo: ${i.sex === 'male' ? 'Masculino' : 'Feminino'}\n- Atividade: ${document.getElementById('activity').options[document.getElementById('activity').selectedIndex].text}\n- Objetivo: ${document.getElementById('goal').options[document.getElementById('goal').selectedIndex].text}\n- Nível treino: ${document.getElementById('trainingLevel').options[document.getElementById('trainingLevel').selectedIndex].text}\n- Tempo disponível: ${i.timeMin} min/dia\n- Equipamentos: ${document.getElementById('equipment').options[document.getElementById('equipment').selectedIndex].text}\n- Frequência desejada: ${freqText}\n\n🔗 *Aguardando link de pagamento para gerar o PDF personalizado*`;
-  const numero = '351962146991'; // Portugal – substitua se necessário
-  window.open(`https://wa.me/${numero}?text=${encodeURIComponent(msg)}`, '_blank');
+  const numero = '351962146991'; // Substitua pelo seu número (código 351 para Portugal)
+  const url = `https://wa.me/${numero}?text=${encodeURIComponent(msg)}`;
+  
+  // Método robusto: criar um link e simular clique (contorna bloqueios de pop-up)
+  const link = document.createElement('a');
+  link.href = url;
+  link.target = '_blank';
+  link.rel = 'noopener noreferrer';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  
+  // Fallback: se mesmo assim não abrir, mostra o link
+  setTimeout(() => {
+    if (confirm("Se o WhatsApp não abriu automaticamente, clique em OK para copiar o link e abrir manualmente.")) {
+      navigator.clipboard.writeText(url).then(() => {
+        alert("Link copiado! Cole no seu navegador.");
+      }).catch(() => {
+        alert("Não foi possível copiar. Abra manualmente:\n" + url);
+      });
+    }
+  }, 500);
 }
 
 // ======================== COMPARTILHAR ========================
@@ -800,7 +819,6 @@ function shareSite() {
     navigator.share({ title: title, text: text, url: url })
       .catch(err => console.log('Erro ao compartilhar:', err));
   } else {
-    // Fallback: copia o link para a área de transferência
     navigator.clipboard.writeText(url).then(() => {
       alert("Link copiado para a área de transferência! Compartilhe com seus amigos.");
     }).catch(() => {
