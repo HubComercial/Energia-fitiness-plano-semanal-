@@ -190,14 +190,6 @@
     }
     .action-buttons { display: flex; gap: 1rem; margin-top: 1.5rem; flex-wrap: wrap; }
     .action-buttons button { flex: 1; margin-top: 0; }
-    .info-message {
-      background: #1A242F; border-radius: 28px; padding: 0.8rem;
-      margin-top: 1rem;
-      text-align: center;
-      font-size: 0.8rem;
-      color: #A9C9E0;
-      border: 1px solid #3b8fc2;
-    }
   </style>
 </head>
 <body>
@@ -275,10 +267,6 @@
         </select>
       </div>
       <button id="generateFromStep1" class="primary">✨ GERAR MEU PLANO GRÁTIS</button>
-      <div id="whatsappButtonContainer" style="display: none;">
-        <button id="sendWhatsappBtn" class="whatsapp">📤 ENVIAR PARA WHATSAPP</button>
-        <div class="info-message">⚠️ Revise seus dados acima e clique em "ENVIAR PARA WHATSAPP" para solicitar o PDF personalizado.</div>
-      </div>
     </div>
   </div>
 
@@ -335,7 +323,7 @@
   </div>
 </div>
 
-<!-- Modal PDF (simples, apenas confirmação) -->
+<!-- Modal PDF -->
 <div id="pdfModal" class="modal">
   <div class="modal-content">
     <h3>🎯 PLANO FITNESS PERSONALIZADO</h3>
@@ -786,17 +774,11 @@ function loadPlanFromState() {
 function changeData() {
   document.getElementById('step2').classList.remove('active');
   document.getElementById('step1').classList.add('active');
-  // Esconde o botão de WhatsApp extra (caso esteja visível)
-  document.getElementById('whatsappButtonContainer').style.display = 'none';
 }
-function showWhatsAppForm() {
-  // Volta para a tela de formulário e exibe o botão de envio
-  document.getElementById('step2').classList.remove('active');
-  document.getElementById('step1').classList.add('active');
-  document.getElementById('whatsappButtonContainer').style.display = 'block';
-}
-function sendCurrentFormToWhatsApp() {
-  // Coleta dados diretamente dos campos do formulário
+
+// ======================== WHATSAPP: CAPTURA DIRETA DO FORMULÁRIO ========================
+function sendToWhatsApp() {
+  // Coleta os valores atuais dos campos (mesmo que estejam na tela 1, ainda existem no DOM)
   const weight = document.getElementById('weight').value;
   const height = document.getElementById('height').value;
   const age = document.getElementById('age').value;
@@ -807,14 +789,16 @@ function sendCurrentFormToWhatsApp() {
   const timeMin = document.getElementById('timeAvailable').value;
   const equipment = document.getElementById('equipment').options[document.getElementById('equipment').selectedIndex].text;
   const desiredFreq = document.getElementById('desiredFrequency').options[document.getElementById('desiredFrequency').selectedIndex].text;
+  
   const msg = `*NOVO PEDIDO DE PDF PERSONALIZADO*\n\n📊 *Dados do cliente*:\n- Peso: ${weight} kg\n- Altura: ${height} cm\n- Idade: ${age} anos\n- Sexo: ${sex}\n- Atividade: ${activity}\n- Objetivo: ${goal}\n- Nível treino: ${trainingLevel}\n- Tempo disponível: ${timeMin} min/dia\n- Equipamentos: ${equipment}\n- Frequência desejada: ${desiredFreq}\n\n🔗 *Aguardando link de pagamento para gerar o PDF personalizado*`;
-  const numero = '351962146991'; // Portugal – substitua se necessário
+  const numero = '351962146991'; // Portugal – substitua pelo seu número se necessário
   const url = `https://wa.me/${numero}?text=${encodeURIComponent(msg)}`;
-  window.open(url, '_blank');
-  // Opcional: volta para a tela de resultados após enviar
-  document.getElementById('step1').classList.remove('active');
-  document.getElementById('step2').classList.add('active');
-  document.getElementById('whatsappButtonContainer').style.display = 'none';
+  
+  // Tenta abrir o WhatsApp
+  const win = window.open(url, '_blank');
+  if (!win || win.closed || typeof win.closed === 'undefined') {
+    alert("Não foi possível abrir o WhatsApp automaticamente.\nCopie o link abaixo e cole no seu navegador:\n\n" + url);
+  }
 }
 
 // ======================== COMPARTILHAR ========================
@@ -839,15 +823,13 @@ document.getElementById('generateFromStep1').addEventListener('click', generateP
 document.getElementById('regenerateBtn').addEventListener('click', generatePlan);
 document.getElementById('changeDataBtn').addEventListener('click', changeData);
 document.getElementById('shareBtn').addEventListener('click', shareSite);
-document.getElementById('sendWhatsappBtn').addEventListener('click', sendCurrentFormToWhatsApp);
-
 const modal=document.getElementById('pdfModal');
 document.getElementById('btnPdfPersonalizado').addEventListener('click',()=>modal.style.display='flex');
 document.getElementById('cancelPdfBtn').addEventListener('click',()=>modal.style.display='none');
 window.addEventListener('click',(e)=>{if(e.target===modal)modal.style.display='none';});
 document.getElementById('confirmPdfBtn').addEventListener('click',()=>{
   modal.style.display='none';
-  showWhatsAppForm(); // Volta para o formulário com botão de envio
+  sendToWhatsApp();
 });
 
 function init(){
