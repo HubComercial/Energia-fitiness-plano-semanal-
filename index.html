@@ -190,6 +190,14 @@
     }
     .action-buttons { display: flex; gap: 1rem; margin-top: 1.5rem; flex-wrap: wrap; }
     .action-buttons button { flex: 1; margin-top: 0; }
+    .info-message {
+      background: #1A242F; border-radius: 28px; padding: 0.8rem;
+      margin-top: 1rem;
+      text-align: center;
+      font-size: 0.8rem;
+      color: #A9C9E0;
+      border: 1px solid #3b8fc2;
+    }
   </style>
 </head>
 <body>
@@ -267,6 +275,10 @@
         </select>
       </div>
       <button id="generateFromStep1" class="primary">✨ GERAR MEU PLANO GRÁTIS</button>
+      <div id="whatsappButtonContainer" style="display: none;">
+        <button id="sendWhatsappBtn" class="whatsapp">📤 ENVIAR PARA WHATSAPP</button>
+        <div class="info-message">⚠️ Revise seus dados acima e clique em "ENVIAR PARA WHATSAPP" para solicitar o PDF personalizado.</div>
+      </div>
     </div>
   </div>
 
@@ -323,7 +335,7 @@
   </div>
 </div>
 
-<!-- Modal PDF -->
+<!-- Modal PDF (simples, apenas confirmação) -->
 <div id="pdfModal" class="modal">
   <div class="modal-content">
     <h3>🎯 PLANO FITNESS PERSONALIZADO</h3>
@@ -434,7 +446,7 @@ const snackBases = [
 snackBases.forEach(b => foodDB.snack.push(...generateFoodItems(b.name, b.protein, b.carbs, b.fat, b.tags, 10)));
 foodDB.snack = foodDB.snack.slice(0,100);
 
-// ======================== EXERCÍCIOS (ampliado para avançado) ========================
+// ======================== EXERCÍCIOS ========================
 const exerciseDB = [
   { name:"Agachamento livre", muscle:"legs", equip:["full"], type:"compound", difficulty:2 },
   { name:"Agachamento com halteres", muscle:"legs", equip:["basic","full"], type:"compound", difficulty:1 },
@@ -552,7 +564,7 @@ function generateWeeklyDiet(goal,seed) {
   return week;
 }
 
-// ======================== TREINO (com opções A, B, C e nomes populares) ========================
+// ======================== TREINO ========================
 function getDesiredFrequency(level, activityValue, desiredOpt) {
   if(desiredOpt !== 'auto') return parseInt(desiredOpt);
   const actMap = { 1.2:3, 1.375:3, 1.55:4, 1.725:5, 1.9:6 };
@@ -774,40 +786,35 @@ function loadPlanFromState() {
 function changeData() {
   document.getElementById('step2').classList.remove('active');
   document.getElementById('step1').classList.add('active');
+  // Esconde o botão de WhatsApp extra (caso esteja visível)
+  document.getElementById('whatsappButtonContainer').style.display = 'none';
 }
-
-// ======================== WHATSAPP CORRIGIDO (método robusto com link e fallback) ========================
-function sendToWhatsApp() {
-  const saved = loadState();
-  if (!saved || !saved.inputs) {
-    alert("Nenhum plano gerado ainda. Gere um plano primeiro.");
-    return;
-  }
-  const i = saved.inputs;
-  const freqText = document.getElementById('desiredFrequency').options[document.getElementById('desiredFrequency').selectedIndex].text;
-  const msg = `*NOVO PEDIDO DE PDF PERSONALIZADO*\n\n📊 *Dados do cliente*:\n- Peso: ${i.weight} kg\n- Altura: ${i.height} cm\n- Idade: ${i.age} anos\n- Sexo: ${i.sex === 'male' ? 'Masculino' : 'Feminino'}\n- Atividade: ${document.getElementById('activity').options[document.getElementById('activity').selectedIndex].text}\n- Objetivo: ${document.getElementById('goal').options[document.getElementById('goal').selectedIndex].text}\n- Nível treino: ${document.getElementById('trainingLevel').options[document.getElementById('trainingLevel').selectedIndex].text}\n- Tempo disponível: ${i.timeMin} min/dia\n- Equipamentos: ${document.getElementById('equipment').options[document.getElementById('equipment').selectedIndex].text}\n- Frequência desejada: ${freqText}\n\n🔗 *Aguardando link de pagamento para gerar o PDF personalizado*`;
-  const numero = '351962146991'; // Substitua pelo seu número (código 351 para Portugal)
+function showWhatsAppForm() {
+  // Volta para a tela de formulário e exibe o botão de envio
+  document.getElementById('step2').classList.remove('active');
+  document.getElementById('step1').classList.add('active');
+  document.getElementById('whatsappButtonContainer').style.display = 'block';
+}
+function sendCurrentFormToWhatsApp() {
+  // Coleta dados diretamente dos campos do formulário
+  const weight = document.getElementById('weight').value;
+  const height = document.getElementById('height').value;
+  const age = document.getElementById('age').value;
+  const sex = document.getElementById('sex').options[document.getElementById('sex').selectedIndex].text;
+  const activity = document.getElementById('activity').options[document.getElementById('activity').selectedIndex].text;
+  const goal = document.getElementById('goal').options[document.getElementById('goal').selectedIndex].text;
+  const trainingLevel = document.getElementById('trainingLevel').options[document.getElementById('trainingLevel').selectedIndex].text;
+  const timeMin = document.getElementById('timeAvailable').value;
+  const equipment = document.getElementById('equipment').options[document.getElementById('equipment').selectedIndex].text;
+  const desiredFreq = document.getElementById('desiredFrequency').options[document.getElementById('desiredFrequency').selectedIndex].text;
+  const msg = `*NOVO PEDIDO DE PDF PERSONALIZADO*\n\n📊 *Dados do cliente*:\n- Peso: ${weight} kg\n- Altura: ${height} cm\n- Idade: ${age} anos\n- Sexo: ${sex}\n- Atividade: ${activity}\n- Objetivo: ${goal}\n- Nível treino: ${trainingLevel}\n- Tempo disponível: ${timeMin} min/dia\n- Equipamentos: ${equipment}\n- Frequência desejada: ${desiredFreq}\n\n🔗 *Aguardando link de pagamento para gerar o PDF personalizado*`;
+  const numero = '351962146991'; // Portugal – substitua se necessário
   const url = `https://wa.me/${numero}?text=${encodeURIComponent(msg)}`;
-  
-  // Método robusto: criar um link e simular clique (contorna bloqueios de pop-up)
-  const link = document.createElement('a');
-  link.href = url;
-  link.target = '_blank';
-  link.rel = 'noopener noreferrer';
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  
-  // Fallback: se mesmo assim não abrir, mostra o link
-  setTimeout(() => {
-    if (confirm("Se o WhatsApp não abriu automaticamente, clique em OK para copiar o link e abrir manualmente.")) {
-      navigator.clipboard.writeText(url).then(() => {
-        alert("Link copiado! Cole no seu navegador.");
-      }).catch(() => {
-        alert("Não foi possível copiar. Abra manualmente:\n" + url);
-      });
-    }
-  }, 500);
+  window.open(url, '_blank');
+  // Opcional: volta para a tela de resultados após enviar
+  document.getElementById('step1').classList.remove('active');
+  document.getElementById('step2').classList.add('active');
+  document.getElementById('whatsappButtonContainer').style.display = 'none';
 }
 
 // ======================== COMPARTILHAR ========================
@@ -832,13 +839,15 @@ document.getElementById('generateFromStep1').addEventListener('click', generateP
 document.getElementById('regenerateBtn').addEventListener('click', generatePlan);
 document.getElementById('changeDataBtn').addEventListener('click', changeData);
 document.getElementById('shareBtn').addEventListener('click', shareSite);
+document.getElementById('sendWhatsappBtn').addEventListener('click', sendCurrentFormToWhatsApp);
+
 const modal=document.getElementById('pdfModal');
 document.getElementById('btnPdfPersonalizado').addEventListener('click',()=>modal.style.display='flex');
 document.getElementById('cancelPdfBtn').addEventListener('click',()=>modal.style.display='none');
 window.addEventListener('click',(e)=>{if(e.target===modal)modal.style.display='none';});
 document.getElementById('confirmPdfBtn').addEventListener('click',()=>{
   modal.style.display='none';
-  sendToWhatsApp();
+  showWhatsAppForm(); // Volta para o formulário com botão de envio
 });
 
 function init(){
